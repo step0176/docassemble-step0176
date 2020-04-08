@@ -1,0 +1,148 @@
+---
+variable name: LFSperson_info
+use objects: True
+data:
+  - First Name: Mark
+    Last Name: Stephenson
+    Age: 58
+    Hobbies: Cooking 
+    Likes Pets?: Yes
+  - First Name: Lisa
+    Last Name: Stephenson
+    Age: 50
+    Hobbies: Watching TV
+    Likes Pets?: Yes
+  - First Name: Laura
+    Last Name: Stephenson
+    Age: 22
+    Hobbies: Procrastinating
+    Likes Pets?: Yes
+  - First Name: Salvador
+    Last Name: Stephenson
+    Age: 21
+    Hobbies: Eating
+    Likes Pets?: No
+  - First Name: Vincent
+    Last Name: Stephenson
+    Age: 18
+    Hobbies: Surfing
+    Likes Pets?: Yes
+---
+code: |
+  LFSpersonal_info_dnu = [
+    {'First Name':'Mark', 'Last Name':'Stephenson' , 'Age':58, 'Hobbies?': 'Cooking', 'Likes Pets?': True},
+    {'First Name':'Lisa', 'Last Name':'Stephenson' , 'Age':50, 'Hobbies?':'Watching TV', 'Likes Pets?' : True},
+    {'First Name':'Laura', 'Last Name':'Stephenson', 'Age':22, 'Hobbies?': 'Procrastinating', 'Likes Pets?':True},
+    {'First Name':'Salvador', 'Last Name': 'Stephenson', 'Age':21, 'Hobbies?': 'Eating', 'Likes Pets?':False},
+    {'First Name':'Vincent', 'Last Name': 'Stephenson', 'Age':18, 'Hobbies?': 'Surfing', 'Likes Pets?':True }  
+  ]
+---
+mandatory: True
+question:  Family Members - Information
+subquestion: |
+  Answer Table
+  
+  ${ LFScolumn_header }
+  ${ LFSdashes }
+  %for LFSitem in LFStable_rows:
+  ${ LFSitem }
+  %endfor
+ 
+buttons:
+- Continue: continue
+- Exit: exit
+---
+code: |
+  LFScolumn_header = ""
+  
+  for LFSitem in LFSperson_info[0]:
+    LFScolumn_header += LFSitem + '|'
+  
+  LFScolumn_header = LFScolumn_header[:-1]
+--- 
+code: |
+  LFSdashes = "---"
+  for i in range(len(LFSperson_info[0]) - 1):
+    LFSdashes += "|---"
+---
+code: | 
+  LFStable_rows = []
+  
+  for LFSitem in LFSperson_info:
+ 
+      MDrow = ""
+      for LFSkey in LFSitem:
+        MDrow += str(LFSitem[LFSkey]) + '|'
+     
+      MDrow = MDrow[:-1]
+     
+      LFStable_rows.append(MDrow)
+---
+variable name: LFSquestions
+use objects: True
+data:
+  - LFSquestion: Please select all of the correct answers for Mark
+    LFSchoices:
+      - First Name - Mark
+      - Last Name - Stephenson
+      - Age - 58
+      - Hobbies - Cooking
+      - Likes Pets? - Yes
+  - LFSquestion: Please select all of the correct answers for Lisa
+    LFSchoices:
+      - First Name - Lisa
+      - Last Name - Stephenson
+      - Age - 50
+      - Hobbies - Watching TV
+      - Likes Pets? - Yes
+  - LFSquestion: Please select all of the correct answers for Laura
+    LFSchoices:
+      - First Name - Laura
+      - Last Name - Stephenson
+      - Age - 22
+      - Hobbies - Procrastinating
+      - Likes Pets? - Yes
+  - LFSquestion: Please select all of the correct answers for Salvador
+    LFSchoices:
+      - First Name - Salvador
+      - Last Name - Stephenson
+      - Age - 21
+      - Hobbies - Eating
+      - Likes Pets? - No
+  - LFSquestion: Please select all of the correct answers for Vincent
+    LFSchoices:
+      - First Name - Vincent
+      - Last Name - Stephenson
+      - Age - 18
+      - Hobbies - Surfing
+      - Likes Pets? - Yes
+---
+mandatory: True
+question: Verification of Details - Family Members
+subquestion: |
+  Here is the information which you have identified as being correct. Please find a PDF attachment of the data below.
+  
+  ${ LFSquestion_table }
+  
+attachment:
+ - Name: Family Members Information Document
+   docx template file: LS_C3.docx
+   valid formats:
+    - pdf
+buttons:
+  - Exit: exit
+  - Restart: restart
+---
+table: LFSquestion_table
+rows:  LFSquestions
+columns:
+  - Correct Answers Selected: |
+      row_item['LFSanswers'].true_values()
+---
+question: |
+  ${ LFSquestions[i]['LFSquestion'] }
+fields:
+  - no label: LFSquestions[i]['LFSanswers']
+    datatype: checkboxes
+    code: LFSquestions[i]['LFSchoices']
+---     
